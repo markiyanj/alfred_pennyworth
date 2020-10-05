@@ -6,8 +6,9 @@ def calculate_rooms_number(data: List[List[int]]) -> int:
         return 0
     else:
         room_count = 1
-        l = [y for x in data for y in x]
-        len1 = len(l)
-        len2 = len(set(l))
+        all_room = len(data) - 1
+        for i in range(all_room):
+            if data[i + 1][0] - data[i][0] <= 1:
+                room_count += 1
 
-        return room_count + len1 - len2
+        return room_count

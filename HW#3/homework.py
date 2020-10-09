@@ -8,8 +8,11 @@ DT = List[ST]
 
 def task_1_fix_names_start_letter(data: DT) -> DT:
     for sett in data:
-        new_name = sett['name'].capitalize()
-        sett['name'] = new_name
+        try:
+            new_name = sett['name'].capitalize()
+            sett['name'] = new_name
+        except KeyError:
+            continue
     return data
 
 
@@ -21,7 +24,8 @@ def task_2_remove_dict_fields(data: DT, redundant_keys: List[str]) -> DT:
         >>> [{'name': 'Alex'}, {'name': 'denys'}]
     """
     for sett in data:
-        del sett[redundant_keys]
+        for r in redundant_keys:
+            del sett[r]
     return data
 
 
@@ -44,7 +48,7 @@ def task_4_return_lambda_sum_2_ints(x, y):
     """
     Return lambda operator which take 2 integer params and returns their sum
     """
-    return (lambda x, y: x + y)(x, y)
+    return lambda x, y: x + y
 
 
 def task_5_append_str_to_list_and_return(input_data: List, elem: str):

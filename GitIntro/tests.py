@@ -1,6 +1,6 @@
 import unittest
 
-from git_intro.homework import calculate_rooms_number
+from homework.py import calculate_rooms_number
 
 
 class TestCalculateRoomsNumber(unittest.TestCase):
@@ -12,3 +12,7 @@ class TestCalculateRoomsNumber(unittest.TestCase):
 
     def test_empty_data(self):
         self.assertEqual(calculate_rooms_number([]), 0)
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -6,17 +6,20 @@ class CustomInt(int):
     ** try to achieve this without __init__ rewriting
     """
 
+    def __init__(self, x):
+        self.x = x
+
     def __lt__(self, other):
-        return False
+        return self.x > other
 
     def __gt__(self, other):
-        return False
+        return self.x < other
 
     def __le__(self, other):
-        return False
+        return self.x >= other
 
     def __ge__(self, other):
-        return False
+        return self.x <= other
 
 
 class PersonWithLimitedSkills:
@@ -32,12 +35,10 @@ class HiddenAttrs:
     Make class which never tells about its attributes.
     Its attribute list is always empty and attributes dictionary is always empty.
     """
+    __dict__ = {}
 
     def __dir__(self):
         return []
-
-    def __dict__(self):
-        return {}
 
 
 class CallableInstances:

@@ -30,13 +30,11 @@ class Pizza:
 
     @classmethod
     def margherita(cls):
-        cls.ingredients = ['mozzarella', 'tomatoes']
-        return cls
+        return cls(['mozzarella', 'tomatoes'])
 
     @classmethod
     def prosciutto(cls):
-        cls.ingredients = ['mozzarella', 'tomatoes', 'ham']
-        return cls
+        return cls(['mozzarella', 'tomatoes', 'ham'])
 
 
 class Concert:
@@ -56,8 +54,8 @@ class Concert:
         def __init__(self):
             self.value = None
 
-        @staticmethod
-        def _new_value(value):
+        @classmethod
+        def _new_value(cls, value):
             if value > Concert.max_visitors_num:
                 return Concert.max_visitors_num
             else:

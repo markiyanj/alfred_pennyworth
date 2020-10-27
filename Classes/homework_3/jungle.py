@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import Dict, Any
 from abc import abstractmethod, ABC
 from uuid import uuid4
 import random
@@ -17,7 +16,6 @@ class Animal(ABC):
     @abstractmethod
     def eat(self, jungle: Jungle):
         raise NotImplementedError
-        print('eat')
 
 
 class Predator(Animal):
@@ -25,7 +23,7 @@ class Predator(Animal):
     def eat(self, jungle: Jungle):
         random_animal = random.choice([a for a in jungle.animals.values()])
         if self.current_power <= 0:
-            jungle.remove_animal()
+            jungle.remove_animal(self)
         elif self.id == random_animal.id:
             self.current_power -= 0.3 * self.max_power
         else:
@@ -49,9 +47,6 @@ class Herbivorous(Animal):
                 self.current_power = self.max_power
 
 
-# AnyAnimal = Any[Herbivorous, Predator]
-
-
 class Jungle:
 
     def __init__(self):
@@ -73,27 +68,23 @@ class Jungle:
         self.animals[str(animal_count)] = animal
 
     def remove_animal(self, animal):
-        animal_list_values = [a for a in self.animals.values()]
-        animal_list_keys = [k for k in self.animals.keys()]
-        index_of_animal = animal_list_values.index(animal)
-        key = animal_list_keys[index_of_animal]
-        del self.animals[key]
+        if animal in self.animals.values():
+            for key, value in self.animals.items():
+                if value == animal:
+                    del self.animals[key]
+                    break
 
 
 def is_predator_in_jungle(jungle: Jungle):
-    count = 0
-    for i in jungle:
-        if isinstance(i, Predator):
-            count += 1
-    if count == 0:
-        return False
-    else:
+    if any(isinstance(animal, Predator) for animal in jungle.animals.values()):
         return True
+    else:
+        return False
 
 
 def animal_generator():
     animal_list = []
-    for i in range(5):
+    for i in range(10):
         power = random.randint(20, 100)
         speed = random.randint(20, 100)
         if random.randint(0, 1) == 0:
@@ -124,6 +115,11 @@ if __name__ == "__main__":
             break
 
     while True:
-        if is_predator_in_jungle(jungle):
-            for animal in jungle:
-                animal.eat(jungle=jungle)
+        if any(isinstance(animal, Predator) for animal in jungle.animals.values()):
+            try:
+                for animal in jungle.animals.values():
+                    animal.eat(jungle=jungle)
+            except RuntimeError:
+                continue
+        else:
+            break

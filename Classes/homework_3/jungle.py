@@ -75,13 +75,6 @@ class Jungle:
                     break
 
 
-def is_predator_in_jungle(jungle: Jungle):
-    if any(isinstance(animal, Predator) for animal in jungle.animals.values()):
-        return True
-    else:
-        return False
-
-
 def animal_generator():
     animal_list = []
     for i in range(10):

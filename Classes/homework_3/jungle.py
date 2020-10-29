@@ -28,7 +28,7 @@ class Predator(Animal):
             self.current_power -= 0.3 * self.max_power
         else:
             if self.speed > random_animal.speed and self.current_power > random_animal.current_power:
-                self.current_power += 40
+                self.current_power += self.current_power * 0.4
                 if self.current_power > self.max_power:
                     self.current_power = self.max_power
             else:
@@ -42,7 +42,7 @@ class Herbivorous(Animal):
         if self.current_power <= 0:
             jungle.remove_animal(self)
         else:
-            self.current_power += 40
+            self.current_power += self.current_power * 0.4
             if self.current_power > self.max_power:
                 self.current_power = self.max_power
 

@@ -77,7 +77,7 @@ class Jungle:
 
 def animal_generator():
     animal_list = []
-    for i in range(10):
+    for i in range(int(input('with how many animals you wont to play?: '))):
         power = random.randint(20, 100)
         speed = random.randint(20, 100)
         if random.randint(0, 1) == 0:
@@ -96,17 +96,19 @@ if __name__ == "__main__":
     # Add animals to jungle
     # Iterate throw jungle and force animals to eat until no predators left
     # animal_generator to create a random animal
-    gen_animal = animal_generator()
+    gen_animal = animal_generator()  # create animals
 
     jungle = Jungle()
 
+    # Add animals to jungle
     while True:
         try:
             animal = next(gen_animal)
             jungle.add_animal(animal)
         except StopIteration:
             break
-
+    print('jungle before game')
+    print(jungle.animals)
     while True:
         if any(isinstance(animal, Predator) for animal in jungle.animals.values()):
             try:
@@ -116,3 +118,5 @@ if __name__ == "__main__":
                 continue
         else:
             break
+    print('jungle after game')
+    print(jungle.animals)

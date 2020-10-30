@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from abc import abstractmethod, ABC
 from uuid import uuid4
 import random
@@ -29,6 +30,7 @@ class Predator(Animal):
         else:
             if self.speed > random_animal.speed and self.current_power > random_animal.current_power:
                 self.current_power += self.current_power * 0.4
+                jungle.remove_animal(random_animal)
                 if self.current_power > self.max_power:
                     self.current_power = self.max_power
             else:
@@ -77,7 +79,7 @@ class Jungle:
 
 def animal_generator():
     animal_list = []
-    for i in range(int(input('with how many animals you wont to play?: '))):
+    for i in range(int(input('With how many animals you wont to play?: '))):
         power = random.randint(20, 100)
         speed = random.randint(20, 100)
         if random.randint(0, 1) == 0:
@@ -107,8 +109,14 @@ if __name__ == "__main__":
             jungle.add_animal(animal)
         except StopIteration:
             break
-    print('jungle before game')
-    print(jungle.animals)
+
+    print('Let`s look at the animals in the jungle ', '\n')
+    time.sleep(1)
+    for animal in jungle:
+        print(f'Class:{animal.__class__.__name__}, max_power:{animal.max_power}, speed:{animal.speed}')
+
+    time.sleep(1)
+    print('The HUNT began', '\n')
     while True:
         if any(isinstance(animal, Predator) for animal in jungle.animals.values()):
             try:
@@ -118,5 +126,13 @@ if __name__ == "__main__":
                 continue
         else:
             break
-    print('jungle after game')
-    print(jungle.animals)
+
+    time.sleep(0.5)
+    print('jungle after hunting', '\n')
+    time.sleep(0.5)
+    if jungle.animals == {}:
+        print('No animals in jungle')
+    else:
+        for an in jungle.animals.values():
+            print(f'Class:{an.__class__.__name__}, current_power:{an.current_power}, speed:{an.speed}')
+

@@ -55,8 +55,8 @@ def make_concert(visitors_num):
 # set level to debug
 # add handler to write logs to file "test.log"
 logger = logging.getLogger('File logger')
-logger.setLevel(logging.INFO)
-handler = logging.handlers.RotatingFileHandler('test.log')
+logger.setLevel(logging.DEBUG)
+handler = logging.handlers.RotatingFileHandler('test.log', mode='w')
 logger.addHandler(handler)
 
 
@@ -67,7 +67,9 @@ def log_message(message, level):
     :param message:
     :param level:
     """
-    if level == 20:
+    if level == 10:
+        logger.debug(message)
+    elif level == 20:
         logger.info(message)
     elif level == 30:
         logger.warning(message)

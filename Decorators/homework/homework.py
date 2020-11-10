@@ -8,6 +8,7 @@ def double_result(func):
     def wrapper(a, b):
         res = func(a, b)
         res *= 2
+        return res
 
     return wrapper
 
@@ -37,6 +38,7 @@ def only_even_parameters(func):
         for i in args:
             if i % 2 != 0:
                 return "Please only use even numbers!"
+        return func(*args)
 
     return wrapper
 
@@ -73,6 +75,7 @@ def logged(func):
         res = func(*args, **kwargs)
         logger.info(f'You called function with parameters: args - {args} and kwargs - {kwargs}')
         logger.info(f'Function return: {res}')
+        return res
 
     return wrapper
 

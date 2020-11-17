@@ -47,6 +47,7 @@ if __name__ == '__main__':
         print('The day with the most reviews is:  ')
         print(most_review_day.iloc[show_max])
     if args.reviewer_stats:
-        reviewers =  beer_review.groupby(['review_profilename'])['review_profilename'].agg(['count']).sort_values(by='count')
+        reviewers = beer_review.groupby(['review_profilename'])['review_profilename'].agg(['count']).sort_values(
+            by='count')
         print('Number of reviews for reviewer:')
         print(reviewers)

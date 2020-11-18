@@ -1,6 +1,7 @@
 import argparse
 
 import pandas as pd
+import time
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -35,19 +36,29 @@ if __name__ == '__main__':
     beer_review = pd.read_csv(path)
     show_max = [-1]
     if args.beer_type:
-        fav_beer_type = beer_review.groupby(['beer_style'])['review_overall'].agg(['sum']).sort_values(by='sum')
-        print('Based on the overall review favorite beer type is:')
-        print(fav_beer_type.iloc[show_max])
+        fav_beer_type = beer_review.groupby(['beer_style'])['review_overall'].sum().sort_values()
+        name = fav_beer_type.iloc[show_max].keys()[0]
+        print(
+            f'Based on the overall review favorite beer type is: {name} '
+            f'with a total score from all reviewers {fav_beer_type[name]}', '\n')
     if args.beer_name:
-        fav_beer_name = beer_review.groupby(['beer_name'])['review_overall'].agg(['sum']).sort_values(by='sum')
-        print('Based on the overall review favorite beer name is:')
-        print(fav_beer_name.iloc[show_max])
+        fav_beer_name = beer_review.groupby(['beer_name'])['review_overall'].sum().sort_values()
+        beer_name = fav_beer_name.iloc[show_max].keys()[0]
+        print(
+            f'Based on the overall review favorite beer name is: {beer_name} '
+            f'with a total score from all reviewers {fav_beer_name[beer_name]}', '\n')
     if args.day_of_review:
-        most_review_day = beer_review.groupby(['review_time'])['review_time'].agg(['count']).sort_values(by='count')
-        print('The day with the most reviews is:  ')
-        print(most_review_day.iloc[show_max])
+        most_review_day = beer_review.groupby(['review_time'])['review_time'].count().sort_values()
+        day = most_review_day.iloc[show_max].keys()[0]
+        print(f'The day with the most reviews is: {time.ctime(day)} with {most_review_day[day]} reviews', '\n')
     if args.reviewer_stats:
-        reviewers = beer_review.groupby(['review_profilename'])['review_profilename'].agg(['count']).sort_values(
-            by='count')
+        reviewers = beer_review.groupby(['review_profilename'])['review_profilename'].count().sort_values()
+        i = 0
         print('Number of reviews for reviewer:')
-        print(reviewers)
+        while True:
+            try:
+                name = reviewers.keys()[i]
+                print(f'{name} - {reviewers[name]} reviews')
+                i += 1
+            except IndexError:
+                break

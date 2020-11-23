@@ -1,49 +1,95 @@
 from __future__ import annotations
 
-from typing import Dict, Any
+import time
+from abc import abstractmethod, ABC
+from uuid import uuid4
+import random
 
 
-class Animal:
+class Animal(ABC):
 
     def __init__(self, power: int, speed: int):
-        self.id = None
+        self.id = uuid4()
         self.max_power = power
         self.current_power = power
         self.speed = speed
 
+    @abstractmethod
     def eat(self, jungle: Jungle):
-        pass
+        raise NotImplementedError
 
 
-class Predator:
-
-    def eat(self, jungle: Jungle):
-        pass
-
-
-class Herbivorous:
+class Predator(Animal):
 
     def eat(self, jungle: Jungle):
-        pass
+        random_animal = random.choice([a for a in jungle.animals.values()])
+        if self.current_power <= 0:
+            jungle.remove_animal(self)
+        elif self.id == random_animal.id:
+            self.current_power -= 0.3 * self.max_power
+        else:
+            if self.speed > random_animal.speed and self.current_power > random_animal.current_power:
+                self.current_power += self.current_power * 0.4
+                jungle.remove_animal(random_animal)
+                if self.current_power > self.max_power:
+                    self.current_power = self.max_power
+            else:
+                self.current_power -= 0.3 * self.max_power
+                random_animal.current_power -= 0.3 * random_animal.max_power
 
 
-AnyAnimal = Any[Herbivorous, Predator]
+class Herbivorous(Animal):
+
+    def eat(self, jungle: Jungle):
+        if self.current_power <= 0:
+            jungle.remove_animal(self)
+        else:
+            self.current_power += self.current_power * 0.4
+            if self.current_power > self.max_power:
+                self.current_power = self.max_power
 
 
 class Jungle:
 
     def __init__(self):
-        self.animals: Dict[str, AnyAnimal] = dict()
+        self.animals = dict()
 
-    def add_animal(self, animal: AnyAnimal):
-        pass
+    number: int = -1
 
-    def remove_animal(self, animal: AnyAnimal):
-        pass
+    def __getitem__(self, item):
+        length = len(self.animals)
+        if self.number >= length - 1:
+            raise StopIteration
+        self.number += 1
+        return self.animals[str(self.number)]
+
+    def add_animal(self, animal):
+        animal_count = 0
+        for i in self.animals.keys():
+            animal_count += 1
+        self.animals[str(animal_count)] = animal
+
+    def remove_animal(self, animal):
+        if animal in self.animals.values():
+            for key, value in self.animals.items():
+                if value == animal:
+                    del self.animals[key]
+                    break
 
 
 def animal_generator():
-    pass
+    animal_list = []
+    for i in range(int(input('With how many animals you wont to play?: '))):
+        power = random.randint(20, 100)
+        speed = random.randint(20, 100)
+        if random.randint(0, 1) == 0:
+            new_animal = Herbivorous(power, speed)
+            animal_list.append(new_animal)
+        else:
+            new_animal = Predator(power, speed)
+            animal_list.append(new_animal)
+    for animal in animal_list:
+        yield animal
 
 
 if __name__ == "__main__":
@@ -52,4 +98,41 @@ if __name__ == "__main__":
     # Add animals to jungle
     # Iterate throw jungle and force animals to eat until no predators left
     # animal_generator to create a random animal
-    pass
+    gen_animal = animal_generator()  # create animals
+
+    jungle = Jungle()
+
+    # Add animals to jungle
+    while True:
+        try:
+            animal = next(gen_animal)
+            jungle.add_animal(animal)
+        except StopIteration:
+            break
+
+    print('Let`s look at the animals in the jungle ', '\n')
+    time.sleep(1)
+    for animal in jungle:
+        print(f'Class:{animal.__class__.__name__}, max_power:{animal.max_power}, speed:{animal.speed}')
+
+    time.sleep(1)
+    print('The HUNT began', '\n')
+    while True:
+        if any(isinstance(animal, Predator) for animal in jungle.animals.values()):
+            try:
+                for animal in jungle.animals.values():
+                    animal.eat(jungle=jungle)
+            except RuntimeError:
+                continue
+        else:
+            break
+
+    time.sleep(0.5)
+    print('jungle after hunting', '\n')
+    time.sleep(0.5)
+    if jungle.animals == {}:
+        print('No animals in jungle')
+    else:
+        for an in jungle.animals.values():
+            print(f'Class:{an.__class__.__name__}, current_power:{an.current_power}, speed:{an.speed}')
+

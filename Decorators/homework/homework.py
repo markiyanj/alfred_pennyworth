@@ -1,8 +1,16 @@
+import logging.handlers
+
+
 # 1. double_result
 # This decorator function should return the result of another function multiplied by two
 def double_result(func):
     # return function result multiplied by two
-    pass
+    def wrapper(a, b):
+        res = func(a, b)
+        res *= 2
+        return res
+
+    return wrapper
 
 
 def add(a, b):
@@ -26,7 +34,13 @@ add(5, 5)  # 20
 
 def only_even_parameters(func):
     # if args passed to func are not even - return "Please only use even numbers!"
-    pass
+    def wrapper(*args):
+        for i in args:
+            if i % 2 != 0:
+                return "Please only use even numbers!"
+        return func(*args)
+
+    return wrapper
 
 
 @only_even_parameters
@@ -48,9 +62,22 @@ def multiply(a, b, c, d, e):
 # Provide support for both positional and named arguments (your wrapper function should take both *args
 # and **kwargs and print them both):
 
+logger = logging.getLogger('Function log')
+logger.setLevel(logging.INFO)
+
+handler = logging.handlers.RotatingFileHandler('func_log.log', mode='w')
+logger.addHandler(handler)
+
+
 def logged(func):
     # log function arguments and its return value
-    pass
+    def wrapper(*args, **kwargs):
+        res = func(*args, **kwargs)
+        logger.info(f'You called function with parameters: args - {args} and kwargs - {kwargs}')
+        logger.info(f'Function return: {res}')
+        return res
+
+    return wrapper
 
 
 @logged
@@ -71,8 +98,16 @@ func(4, 4, 4)
 # If it is wrong, it should print("Bad Type"), otherwise function should be executed.
 
 def type_check(correct_type):
-    # put code here
-    pass
+    def wrapper(func):
+        def inner(param):
+            if type(param) != correct_type:
+                return 'Bad type'
+            else:
+                return func(param)
+
+        return inner
+
+    return wrapper
 
 
 @type_check(int)

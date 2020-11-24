@@ -4,25 +4,57 @@ import os
 from datetime import datetime
 
 
-def beer_review(path_to_source, dest_path, file_name, csv_files: list):
+class EmptyFile(Exception):
+    pass
+
+
+def is_file_empty(reader):
+    line_in_csv = 0
+    for line in reader:
+        line_in_csv += 1
+    if line_in_csv == 0:
+        return True
+    return False
+
+
+def csv_writer(path_to_source, writer, csv_files):
     count = 0
-    with open(f'{dest_path}/{file_name}', 'w') as file:
-        writer = csv.writer(file)
-        for i in csv_files:
-            with open(f'{path_to_source}/' + i, 'r') as f:
-                reader = csv.reader(f)
-                if count == 0:
-                    for row in reader:
-                        writer.writerow(row)
-                else:
-                    for row in reader:
-                        if row[0].startswith('brewery_name'):
-                            continue
-                        writer.writerow(row)
-            count += 1
+    for i in csv_files:
+        with open(f'{path_to_source}/' + i, 'r') as f:
+            reader = csv.reader(f)
+            if is_file_empty(reader):
+                raise EmptyFile('File is empty!')
+            if count == 0:
+                for row in reader:
+                    writer.writerow(row)
+            else:
+                for row in reader:
+                    if row[0].startswith('brewery_name'):
+                        continue
+                    writer.writerow(row)
+    count += 1
 
 
-if __name__ == '__main__':
+def beer_review(path_to_source, dest_path, file_name, csv_files: list):
+    try:
+        with open(f'{dest_path}/{file_name}', 'w') as file:
+            writer = csv.writer(file)
+            csv_writer(path_to_source, writer, csv_files)
+    except FileNotFoundError as e:
+        print(e)
+
+
+def get_csv_files():
+    files = []
+    for file in os.listdir(args.path):
+        for name in range(int(args.start_year), int(args.end_year) + 1):
+            if file.startswith(str(name)):
+                files.append(file)
+
+    return files
+
+
+def argument_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--path",
                         required=True,
@@ -54,10 +86,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    csv_files = []
-    for file in os.listdir(args.path):
-        for name in range(int(args.start_year), int(args.end_year) + 1):
-            if file.startswith(str(name)):
-                csv_files.append(file)
+    return args
 
-    beer_review(args.path, args.destination_path, args.destination_filename, csv_files)
+
+if __name__ == '__main__':
+    args = argument_parser()
+    files_csv = get_csv_files()
+    beer_review(args.path, args.destination_path, args.destination_filename, files_csv)
